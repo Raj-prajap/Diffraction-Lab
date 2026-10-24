@@ -529,3 +529,36 @@ export class DiffractionPhysics {
     };
   }
 }
+
+export const SIMULATION_SOFTWARE_TOOLS = [
+  {
+    name: 'Ansys Lumerical (FDTD / RCWA + LSWM Plugin)',
+    method: 'Sub-Wavelength Model (LSWM) & Particle Swarm Optimization (PSO)',
+    desc: 'Simulates optical surfaces with sub-wavelength diffraction gratings, computes vector BSDF functions, optimizes blaze efficiency via PSO, and exports JSON directly into Zemax OpticStudio.',
+  },
+  {
+    name: 'GD-Calc® (Grating Diffraction Calculator — MATLAB / Code Ocean)',
+    method: 'Rigorous Coupled-Wave Analysis (RCWA) for 1D/2D Periodic Gratings',
+    desc: 'Computes optical diffraction efficiencies (η_m) of linear, blazed, sinusoidal, and sub-wavelength periodic structures under arbitrary TE/TM polarization and conical incidence.',
+  },
+  {
+    name: 'Stanford S4 (Simulation of S-Matrix in Layered Periodic Structures)',
+    method: 'Fourier Modal Method (FMM / RCWA) with Lua / Python Scripting',
+    desc: 'Widely used open-source tool (e.g. S4 Tutorial P3: 1D PMMA pillars on MgO substrate) for multi-layer photonic crystals, metasurfaces, and plane-wave excitation.',
+  },
+  {
+    name: 'OghmaNano (Photonic & Optoelectronic TCAD + TMM)',
+    method: 'Transfer Matrix Method (TMM) for DFB Bragg Gratings',
+    desc: 'Simulates Distributed Feedback (DFB) lasers and Bragg reflectors using TMM with Lua scripting to model pitch Λ, quarter-wave phase shifts, and fabrication uncertainty.',
+  },
+  {
+    name: 'COMSOL Multiphysics (Wave Optics Module) & MEEP',
+    method: 'Finite Element Method (FEM) & Open-Source FDTD',
+    desc: 'Visualizes near-field electromagnetic wavefronts, polychromatic white-light order splitting, and custom plasmonic/dielectric grating geometries.',
+  },
+  {
+    name: 'VisuPhy, oPhysics, PrayogShala & IIT-K / Amrita Virtual Labs',
+    method: 'Interactive Educational Wave Optics & Spectrometer Simulators',
+    desc: 'Real-time browser and mobile physics lab simulations for assembling laser + grating + screen setups, isolating color channels, and reading Vernier spectrometers.',
+  },
+];

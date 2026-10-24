@@ -19,7 +19,11 @@ export const App: React.FC = () => {
       {/* Top Banner & Telemetry Header */}
       <header className="sticky top-0 z-40 bg-[#070B16]/95 backdrop-blur-md px-3 sm:px-6 pt-3 pb-2 border-b border-white/5 space-y-2">
         <LabHeaderHudBar onOpenApkModal={() => setIsApkModalOpen(true)} />
-        <IitKanpurAndWhiteLightChannelBar />
+        {uiState.statusBannerMessage && (
+          <div className="w-full rounded-xl bg-cyan-500/15 border border-cyan-500/40 px-3.5 py-2 text-xs font-medium text-cyan-200 shadow-sm flex items-center justify-between transition-all animate-fadeIn">
+            <span>{uiState.statusBannerMessage}</span>
+          </div>
+        )}
       </header>
 
       {/* Main Tab Content */}
