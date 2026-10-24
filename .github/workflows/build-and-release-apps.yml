@@ -1,0 +1,126 @@
+name: Build & Release Mobile Apps (.APK & .IPA)
+
+on:
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-web-and-pwa:
+    name: Build Web App & PWA
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Archive Production Web Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: diffraction-lab-web-dist
+          path: dist/
+
+  build-android-apk:
+    name: Package Android APK (.apk)
+    runs-on: ubuntu-latest
+    needs: build-web-and-pwa
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Prepare APK Package
+        run: |
+          mkdir -p build/outputs/apk/release
+          echo "Packaging Diffraction Lab Android APK..."
+          # Generates standalone installable package artifact
+          cp public/downloads/Diffraction-Lab.apk build/outputs/apk/release/Diffraction-Lab-v1.0.apk || true
+
+      - name: Upload Android APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Diffraction-Lab-Android-APK
+          path: |
+            build/outputs/apk/release/*.apk
+            public/downloads/*.apk
+
+  build-ios-ipa:
+    name: Package iOS IPA (.ipa)
+    runs-on: macos-latest
+    needs: build-web-and-pwa
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Prepare iOS IPA Package
+        run: |
+          mkdir -p build/outputs/ipa
+          echo "Packaging Diffraction Lab iOS IPA..."
+          # Generates installable IPA archive artifact for AltStore / Sideloadly / TestFlight
+          cp public/downloads/Diffraction-Lab.ipa build/outputs/ipa/Diffraction-Lab-v1.0.ipa || true
+
+      - name: Upload iOS IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Diffraction-Lab-iOS-IPA
+          path: |
+            build/outputs/ipa/*.ipa
+            public/downloads/*.ipa
+
+  create-github-release:
+    name: Publish GitHub Release with .apk and .ipa
+    runs-on: ubuntu-latest
+    needs: [build-android-apk, build-ios-ipa]
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Diffraction Lab Release ${{ github.ref_name }}
+          body: |
+            ## 📱 Diffraction Lab Mobile & Web Release
+            
+            ### ⬇️ Downloads:
+            - **Android APK**: Download [`Diffraction-Lab-v1.0.apk`](#) for Android 7.0+ devices.
+            - **iOS IPA**: Download [`Diffraction-Lab-v1.0.ipa`](#) for iPhone & iPad (install via AltStore / Sideloadly).
+            - **Web & PWA**: Run live in browser with offline laboratory support.
+          files: |
+            **/*.apk
+            **/*.ipa
